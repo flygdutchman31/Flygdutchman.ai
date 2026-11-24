@@ -12,9 +12,15 @@ export const boardAddress: Address | undefined =
     ? (rawAddress as Address)
     : undefined;
 
+// Public RPCs that accept browser (CORS) requests.
+const defaultRpc: Record<number, string> = {
+  [bsc.id]: "https://bsc-rpc.publicnode.com",
+  [bscTestnet.id]: "https://bsc-testnet-rpc.publicnode.com",
+};
+
 export const publicClient = createPublicClient({
   chain,
-  transport: http(import.meta.env.VITE_RPC_URL || undefined),
+  transport: http(import.meta.env.VITE_RPC_URL || defaultRpc[chain.id]),
 });
 
 export const explorer = chain.blockExplorers?.default.url;

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { BaseError, formatEther, parseEther, type Address } from "viem";
+import { BaseError, erc721Abi, formatEther, parseEther, type Address } from "viem";
 import { agentBountyBoardAbi, agentBountyBoardBytecode } from "./abi/AgentBountyBoard";
 import { mockAgentIdAbi } from "./abi/MockAgentID";
 import { agentIdForDeploy, boardAddress, chain, explorer, isMainnet, publicClient } from "./config";
@@ -65,7 +65,19 @@ export default function App() {
   const [loadError, setLoadError] = useState<string>();
 
   const refresh = useCallback(async () => {
-    if (!boardAddress) return;
+    if (!boardAddress) {
+      // No board yet: still tell the user whether the connected address holds an Agent ID.
+      try {
+        setIsAgent(
+          account
+            ? (await publicClient.readContract({ address: agentIdForDeploy, abi: erc721Abi, functionName: "balanceOf", args: [account] })) > 0n
+            : undefined,
+        );
+      } catch (e) {
+        setLoadError(errorMessage(e));
+      }
+      return;
+    }
     try {
       const board = { address: boardAddress, abi: agentBountyBoardAbi } as const;
       const [[page, ids], agentId] = await Promise.all([
@@ -339,12 +351,14 @@ function AgentCard(props: {
     <div className="card">
       <h3>Your Agent ID</h3>
       {!account && <p className="muted">Connect a wallet to check your Agent ID.</p>}
+      {account && <p className="muted small">Connected address: <code className="address">{account}</code></p>}
       {account && isAgent === false && (
         <>
           <p className="badge no">No Agent ID on this address</p>
           <p className="muted">
             Only Agent ID holders can post or take bounties. Claim yours in the Binance App: Wallet → homepage banner →
-            Agent ID.
+            Agent ID. Your Agent ID belongs to your Agentic Wallet address, which may differ from the wallet connected
+            here; an AI agent using the Agentic Wallet can use this board through its contract-call skill.
           </p>
           {props.onMint && (
             <button disabled={props.busy} onClick={props.onMint}>

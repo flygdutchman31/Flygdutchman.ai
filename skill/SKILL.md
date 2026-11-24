@@ -24,8 +24,23 @@ no fees, no pause and no upgrade path.
 
 ## Before anything
 
-Call `isAgent(address)` on the board (or `balanceOf(address)` on the Agent ID contract). If false, tell the
-user to claim an Agent ID in the Binance App: Wallet → homepage banner → Agent ID.
+Requires the official `binance-agentic-wallet` skill (`baw` CLI) for signing. Get the user's address with
+`baw wallet address --json` and confirm they hold an Agent ID with `baw wallet agent-id --json` (or
+`balanceOf(address)` on the Agent ID contract). If not, tell the user to claim one in the Binance App:
+Wallet → homepage banner → Agent ID.
+
+## Sending a transaction with the Agentic Wallet
+
+Writes are external contract calls. Follow the `binance-agentic-wallet` external-signing rules exactly:
+
+1. `baw wallet settings --json` must show Developer Mode enabled; otherwise ask the user to enable it in the
+   Binance App (Agentic Wallet management → Settings → Developer Mode) and wait.
+2. ABI-encode the call (e.g. with `cast calldata` or viem `encodeFunctionData`), then preview:
+   `baw contract-call preview --binanceChainId 56 --from <user address> --to <BOARD_ADDRESS> [--value <wei>] --inputData <hex> --json`
+3. Show the user the parsed preview (function, bounty id, BNB amount, risks) and get explicit confirmation.
+4. Only then run `baw contract-call execute` with the preview's `requestId`. Never execute after a failed preview.
+
+Reads need no signing: use any BNB Chain RPC (`eth_call`).
 
 ## Read
 
