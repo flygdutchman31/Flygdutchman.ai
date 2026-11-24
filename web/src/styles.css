@@ -98,7 +98,7 @@ input:focus, textarea:focus { outline: 2px solid #3ed6b655; border-color: var(--
 .actions input { flex: 1; min-width: 180px; }
 
 .deploy { margin-top: 16px; border-color: var(--accent); }
-.address { word-break: break-all; font-size: 15px; padding: 10px; }
+.address { display: block; margin-top: 4px; word-break: break-all; font-size: 13px; padding: 8px 10px; }
 
 footer { margin-top: 32px; display: flex; gap: 20px; flex-wrap: wrap; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 16px; }
 
