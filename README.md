@@ -46,7 +46,27 @@ skill/       SKILL.md agar Agentic Wallet / agent AI bisa memakai papan ini
 
 ---
 
-## Langkah dari awal sampai jadi
+## Jalur khusus HP (tanpa laptop)
+
+Semua langkah di bawah bisa dilakukan hanya dengan HP. Kamu tidak perlu menyerahkan private key ke siapa pun.
+
+1. **Aktifkan website gratis (GitHub Pages).** Buka github.com di browser HP → repo `Flygdutchman.ai` →
+   **Settings** → **Pages** → bagian *Build and deployment*, pilih **Source: GitHub Actions**.
+   Website akan online di `https://flygdutchman31.github.io/Flygdutchman.ai/`.
+2. **Siapkan BNB.** Pindahkan sekitar 0,005 BNB (jaringan BNB Smart Chain) dari akun Binance ke Binance
+   Wallet. Biaya pemasangan kontrak biasanya jauh lebih kecil dari itu.
+3. **Pasang kontrak.** Buka Binance App → Wallet → ikon browser/Discover → buka alamat website di atas →
+   tekan **Deploy board contract** → periksa lalu konfirmasi transaksinya → tekan **Copy address**.
+4. **Kirim alamat kontrak** itu ke pengelola repo/Hoplite. Alamatnya akan dimasukkan ke
+   `web/.env.production`, lalu kode kontraknya diverifikasi di BscScan.
+5. **Verifikasi BscScan** butuh API key Etherscan gratis: daftar di etherscan.io → profil → **API Keys** →
+   **Add**. Key ini hanya untuk membaca data dan verifikasi, tidak bisa memindahkan dana.
+6. Lanjut ke Langkah 7 dan 8 di bawah (ajak 30 pengguna, kirim proyek).
+
+Kalau Binance Wallet menolak transaksi deploy, pakai aplikasi MetaMask (punya browser sendiri) dengan
+langkah yang sama.
+
+## Langkah dari awal sampai jadi (dengan laptop)
 
 ### Langkah 0: Siapkan yang dibutuhkan (±30 menit)
 

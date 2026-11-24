@@ -20,3 +20,6 @@ export const publicClient = createPublicClient({
 export const explorer = chain.blockExplorers?.default.url;
 
 export const AGENT_ID_MAINNET = "0x60b9262456de011f7d15a54cdd8c48baaa8b022f" as const;
+
+// Agent ID contract the deploy page wires into a new board. Override only for local/testnet mocks.
+export const agentIdForDeploy = ((import.meta.env.VITE_AGENT_ID as string | undefined) || AGENT_ID_MAINNET) as Address;

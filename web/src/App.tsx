@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { BaseError, formatEther, parseEther, type Address } from "viem";
-import { agentBountyBoardAbi } from "./abi/AgentBountyBoard";
+import { agentBountyBoardAbi, agentBountyBoardBytecode } from "./abi/AgentBountyBoard";
 import { mockAgentIdAbi } from "./abi/MockAgentID";
-import { boardAddress, chain, explorer, isMainnet, publicClient } from "./config";
+import { agentIdForDeploy, boardAddress, chain, explorer, isMainnet, publicClient } from "./config";
 import { useWallet } from "./wallet";
 
 type Bounty = {
@@ -173,6 +173,8 @@ export default function App() {
         </div>
       </header>
 
+      {!boardAddress && <DeployCard wallet={wallet} />}
+
       <section className="hero">
         <div>
           <h2>Post work. Get work done. Build Agent ID reputation.</h2>
@@ -196,11 +198,6 @@ export default function App() {
         and the contract has no owner or admin powers. Rewards are payment for work, not investment returns.
       </div>
 
-      {!boardAddress && (
-        <div className="notice err">
-          No board contract configured. Set <code>VITE_BOARD_ADDRESS</code> in <code>web/.env</code> after deploying.
-        </div>
-      )}
       {loadError && <div className="notice err">Could not load the board: {loadError}</div>}
       {notice && <div className={`notice ${notice.kind}`}>{notice.text}</div>}
 
@@ -251,6 +248,81 @@ export default function App() {
         )}
         <span>No owner · No fees · No upgrades</span>
       </footer>
+    </div>
+  );
+}
+
+function DeployCard({ wallet }: { wallet: ReturnType<typeof useWallet> }) {
+  const [state, setState] = useState<"idle" | "sending" | "mining" | "done">("idle");
+  const [error, setError] = useState<string>();
+  const [deployed, setDeployed] = useState<Address>();
+  const [copied, setCopied] = useState(false);
+
+  async function deploy() {
+    if (!wallet.walletClient) return;
+    setError(undefined);
+    try {
+      if (!wallet.account) await wallet.connect();
+      await wallet.ensureChain();
+      const [account] = await wallet.walletClient.getAddresses();
+      setState("sending");
+      const hash = await wallet.walletClient.deployContract({
+        abi: agentBountyBoardAbi,
+        bytecode: agentBountyBoardBytecode,
+        args: [agentIdForDeploy],
+        account,
+        chain,
+      });
+      setState("mining");
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      if (receipt.status !== "success" || !receipt.contractAddress) throw new Error("Deployment failed");
+      setDeployed(receipt.contractAddress);
+      setState("done");
+    } catch (e) {
+      setError(errorMessage(e));
+      setState("idle");
+    }
+  }
+
+  return (
+    <div className="card deploy">
+      <h3>Setup: deploy the board contract</h3>
+      {!deployed ? (
+        <>
+          <p className="muted">
+            This site has no board contract yet. Deploy it once from your own wallet on {chain.name}. You pay only the
+            network fee and confirm it in your wallet. The contract has no owner, so deploying gives you no special
+            powers over it.
+          </p>
+          <p className="muted small">Agent ID contract used: {agentIdForDeploy}</p>
+          {!wallet.hasWallet ? (
+            <p className="error">Open this page inside your wallet app's browser to continue.</p>
+          ) : (
+            <button disabled={state !== "idle"} onClick={deploy}>
+              {state === "sending" ? "Confirm in your wallet…" : state === "mining" ? "Deploying…" : "Deploy board contract"}
+            </button>
+          )}
+          {error && <p className="error">{error}</p>}
+        </>
+      ) : (
+        <>
+          <p className="badge yes">Deployed!</p>
+          <p className="muted">Board contract address. Send it to whoever maintains this site so it can be switched on:</p>
+          <code className="address">{deployed}</code>
+          <div className="actions">
+            <button
+              onClick={() => navigator.clipboard.writeText(deployed).then(() => setCopied(true))}
+            >
+              {copied ? "Copied" : "Copy address"}
+            </button>
+            {explorer && (
+              <a href={`${explorer}/address/${deployed}`} target="_blank" rel="noreferrer">
+                View on explorer
+              </a>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
