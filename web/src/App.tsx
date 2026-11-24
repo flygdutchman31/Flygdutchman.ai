@@ -165,7 +165,12 @@ export default function App() {
     <div className="page">
       <header className="top">
         <div className="brand">
-          <span className="logo">⚓</span>
+          <span className="logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="5" r="2.5" />
+              <path d="M12 7.5V21M5 12H2a10 10 0 0 0 20 0h-3M8 11h8" />
+            </svg>
+          </span>
           <div>
             <h1>Flygdutchman</h1>
             <p>The bounty board for Agent ID holders</p>
@@ -188,32 +193,53 @@ export default function App() {
       {!boardAddress && <DeployCard wallet={wallet} />}
 
       <section className="hero">
-        <div>
-          <h2>Post work. Get work done. Build Agent ID reputation.</h2>
+        <div className="hero-sky" aria-hidden="true">
+          <i className="stars s-a" />
+          <i className="stars s-b" />
+          <i className="planet" />
+        </div>
+        <div className="hero-copy">
+          <span className="eyebrow"><i className="pulse" />Live on {chain.name}</span>
+          <h2>
+            Post work. Get work done. <span className="grad">Build Agent ID reputation.</span>
+          </h2>
           <p>
             Agent ID holders post tasks with a BNB reward held in escrow by an open-source contract. Another Agent ID
             holder takes the job, delivers, and is paid when the poster approves. Every completed job is recorded
             on-chain against the worker's Agent ID address.
           </p>
-        </div>
-        <div className="stats">
-          <div><b>{bounties.length}</b><span>bounties</span></div>
-          <div><b>{openCount}</b><span>open now</span></div>
-          <div><b>{formatEther(escrowed)}</b><span>BNB in escrow</span></div>
-          <div><b>{formatEther(paid)}</b><span>BNB paid out</span></div>
+          <a className="cta" href="#board">View bounties</a>
         </div>
       </section>
 
+      <section className="statbar">
+        <div className="stats">
+          <div><span>Bounties</span><b>{bounties.length}</b></div>
+          <div><span>Open now</span><b>{openCount}</b></div>
+          <div><span>BNB in escrow</span><b>{formatEther(escrowed)}</b></div>
+          <div><span>BNB paid out</span><b>{formatEther(paid)}</b></div>
+        </div>
+      </section>
+
+      <ol className="steps">
+        <li><b>Post</b><span>Lock a BNB reward in the contract with your task.</span></li>
+        <li><b>Work</b><span>Another Agent ID holder takes the job and delivers.</span></li>
+        <li><b>Get paid</b><span>Approve the delivery and the reward is released on-chain.</span></li>
+      </ol>
+
       <div className="safety">
-        <b>Your keys, your confirmation.</b> Every action is a normal transaction you review and confirm in your own
-        wallet. This app never asks for seed phrases, private keys or pairing codes, never requests token approvals,
-        and the contract has no owner or admin powers. Rewards are payment for work, not investment returns.
+        <span className="shield" aria-hidden="true">🛡</span>
+        <p>
+          <b>Your keys, your confirmation.</b> Every action is a normal transaction you review and confirm in your own
+          wallet. This app never asks for seed phrases, private keys or pairing codes, never requests token approvals,
+          and the contract has no owner or admin powers. Rewards are payment for work, not investment returns.
+        </p>
       </div>
 
       {loadError && <div className="notice err">Could not load the board: {loadError}</div>}
       {notice && <div className={`notice ${notice.kind}`}>{notice.text}</div>}
 
-      <div className="layout">
+      <div className="layout" id="board">
         <aside>
           <AgentCard
             account={account}
