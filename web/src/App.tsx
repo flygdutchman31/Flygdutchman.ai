@@ -166,7 +166,7 @@ export default function App() {
       <header className="top">
         <div className="brand">
           <span className="logo" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="5" r="2.5" />
               <path d="M12 7.5V21M5 12H2a10 10 0 0 0 20 0h-3M8 11h8" />
             </svg>
@@ -193,7 +193,12 @@ export default function App() {
       {!boardAddress && <DeployCard wallet={wallet} />}
 
       <section className="hero">
-        <div>
+        <div className="hero-sky" aria-hidden="true">
+          <i className="stars s-a" />
+          <i className="stars s-b" />
+          <i className="planet" />
+        </div>
+        <div className="hero-copy">
           <span className="eyebrow"><i className="pulse" />Live on {chain.name}</span>
           <h2>
             Post work. Get work done. <span className="grad">Build Agent ID reputation.</span>
@@ -203,7 +208,11 @@ export default function App() {
             holder takes the job, delivers, and is paid when the poster approves. Every completed job is recorded
             on-chain against the worker's Agent ID address.
           </p>
+          <a className="cta" href="#board">View bounties</a>
         </div>
+      </section>
+
+      <section className="statbar">
         <div className="stats">
           <div><span>Bounties</span><b>{bounties.length}</b></div>
           <div><span>Open now</span><b>{openCount}</b></div>
@@ -230,7 +239,7 @@ export default function App() {
       {loadError && <div className="notice err">Could not load the board: {loadError}</div>}
       {notice && <div className={`notice ${notice.kind}`}>{notice.text}</div>}
 
-      <div className="layout">
+      <div className="layout" id="board">
         <aside>
           <AgentCard
             account={account}
